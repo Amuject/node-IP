@@ -1,145 +1,31 @@
+const regex4 = new RegExp(
+  /^((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])/
+);
+const regex6 = new RegExp(
+  /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/
+);
+
 class IP {
   constructor(ip) {
+    if (!regex4.test(ip) && !regex6.test(ip)) {
+      throw new Error('Not vaild ip address');
+    }
     this.ip = ip;
-    this.full = this.full6(this.ip);
-  }
-
-  isV4() {
-    return !!this.ip.match(/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/);
-  }
-
-  isV6() {
-    return !this.isV4();
-  }
-
-  isRange() {
-    return !!this.ip.match(/\/[0-9]+/);
-  }
-
-  getRange4() {
-    var part = this.ip.split('/');
-    var ipaddress = part[0].split('.');
-    var netmaskblocks = ['0', '0', '0', '0'];
-    if (!/\d+\.\d+\.\d+\.\d+/.test(part[1])) {
-      netmaskblocks = (
-        '1'.repeat(parseInt(part[1], 10)) +
-        '0'.repeat(32 - parseInt(part[1], 10))
-      ).match(/.{1,8}/g);
-      netmaskblocks = netmaskblocks.map(function (el) {
-        return parseInt(el, 2);
-      });
-    } else {
-      netmaskblocks = part[1].split('.').map(function (el) {
-        return parseInt(el, 10);
-      });
+    this.is4 = regex4.test(this.ip);
+    this.is6 = !this.is4;
+    this.hasSubnet = !!this.ip.match(/\/[0-9]+/);
+    this.full6 = this.getFull6(this.ip);
+    if (this.hasSubnet) {
+      this.range = this.is4 ? this.getRange4() : this.getRange6();
     }
-    var invertedNetmaskblocks = netmaskblocks.map(function (el) {
-      return el ^ 255;
-    });
-    var baseAddress = ipaddress.map(function (block, idx) {
-      return block & netmaskblocks[idx];
-    });
-    var broadcastaddress = baseAddress.map(function (block, idx) {
-      return block | invertedNetmaskblocks[idx];
-    });
-    return {
-      start: baseAddress.join('.'),
-      end: broadcastaddress.join('.'),
-    };
   }
 
-  getRange6() {
-    const mask = this.getMask();
-    const ba = a2b(this.full);
-    const bn = ba.substr(0, mask);
-    const bh = '0'.repeat(0);
-    const bs = bn + '0'.repeat(128 - mask) + bh;
-    const be = bn + '1'.repeat(128 - mask) + bh;
-    function l(d, p, n) {
-      const pp = p.repeat(n);
-      if (d.length < pp.length) {
-        d = pp.substring(0, pp.length - d.length) + d;
-      }
-      return d;
-    }
-    function a2b(a) {
-      let b = '';
-      for (const s of new IP(a).full.split(':')) {
-        b += l(parseInt(s, 16).toString(2), '0', 16);
-      }
-      return b;
-    }
-    function b2a(b) {
-      const a = [];
-      for (let i = 0; i < 8; ++i) {
-        const bp = b.substr(i * 16, 16);
-        const s = l(parseInt(bp, 2).toString(16), '0', 4);
-        a.push(s);
-      }
-      return a.join(':');
-    }
-    return {
-      start: b2a(bs),
-      end: b2a(be),
-    };
-  }
-
-  getMask() {
-    const m = this.ip.match(/\/([0-9]+)/);
-    return m[1] * 1;
-  }
-
-  in(ip, ip2) {
-    if (!ip2 && !ip.isRange()) {
-      return this.full == ip.full;
-    }
-    let start, end;
-    if (!ip2 && ip.isRange()) {
-      if (ip.isV4()) {
-        const range = ip.getRange4();
-        start = new IP(range.start).full;
-        end = new IP(range.end).full;
-      } else {
-        const range = ip.getRange6();
-        start = range.start;
-        end = range.end;
-      }
-    } else {
-      start = ip.full;
-      end = ip2.full;
-    }
-    start = start.replace(/:/g, '');
-    end = end.replace(/:/g, '');
-    const c = this.full.replace(/:/g, '');
-    return start <= c && c <= end;
-  }
-
-  isBogon() {
-    for (const sub in bogonIPRanges) {
-      const ip = new IP(sub);
-      if (this.in(ip)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  getBogon() {
-    for (const sub in bogonIPRanges) {
-      const ip = new IP(sub);
-      if (this.in(ip)) {
-        return bogonIPRanges[sub];
-      }
-    }
-    return null;
-  }
-
-  full6() {
+  getFull6() {
     let ips = this.ip;
-    if (this.isRange()) {
+    if (this.hasSubnet) {
       ips = ips.replace(/\/[0-9]+/, '');
     }
-    if (this.isV4()) {
+    if (this.is4) {
       const m = ips.match(/^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/);
       const a = [
         (m[1] * 1).toString(16),
@@ -172,6 +58,114 @@ class IP {
       }
       return ipv6.join(':');
     }
+  }
+
+  getRange4() {
+    var part = this.ip.split('/');
+    var ipas = part[0].split('.');
+    var blocks = ['0', '0', '0', '0'];
+    if (!/\d+\.\d+\.\d+\.\d+/.test(part[1])) {
+      blocks = (
+        '1'.repeat(parseInt(part[1], 10)) +
+        '0'.repeat(32 - parseInt(part[1], 10))
+      ).match(/.{1,8}/g);
+      blocks = blocks.map(function (el) {
+        return parseInt(el, 2);
+      });
+    } else {
+      blocks = part[1].split('.').map(function (el) {
+        return parseInt(el, 10);
+      });
+    }
+    var ivrt = blocks.map(function (el) {
+      return el ^ 255;
+    });
+    var base = ipas.map(function (block, idx) {
+      return block & blocks[idx];
+    });
+    var brdc = base.map(function (block, idx) {
+      return block | ivrt[idx];
+    });
+    return {
+      start: base.join('.'),
+      end: brdc.join('.'),
+    };
+  }
+
+  getRange6() {
+    const m = this.ip.match(/\/([0-9]+)/);
+    const mask = m[1] * 1;
+    const ba = a2b(this.full6);
+    const bn = ba.substr(0, mask);
+    const bh = '0'.repeat(0);
+    const bs = bn + '0'.repeat(128 - mask) + bh;
+    const be = bn + '1'.repeat(128 - mask) + bh;
+    function l(d, p, n) {
+      const pp = p.repeat(n);
+      if (d.length < pp.length) {
+        d = pp.substring(0, pp.length - d.length) + d;
+      }
+      return d;
+    }
+    function a2b(a) {
+      let b = '';
+      for (const s of new IP(a).full6.split(':')) {
+        b += l(parseInt(s, 16).toString(2), '0', 16);
+      }
+      return b;
+    }
+    function b2a(b) {
+      const a = [];
+      for (let i = 0; i < 8; ++i) {
+        const bp = b.substr(i * 16, 16);
+        const s = l(parseInt(bp, 2).toString(16), '0', 4);
+        a.push(s);
+      }
+      return a.join(':');
+    }
+    return {
+      start: b2a(bs),
+      end: b2a(be),
+    };
+  }
+
+  in(ip, ip2) {
+    if (!ip2 && !ip.hasSubnet) {
+      return this.full6 == ip.full6;
+    }
+    let start, end;
+    if (!ip2 && ip.hasSubnet) {
+      const range = ip.range;
+      start = new IP(range.start).full6;
+      end = new IP(range.end).full6;
+    } else {
+      start = ip.full6;
+      end = ip2.full6;
+    }
+    start = start.replace(/:/g, '');
+    end = end.replace(/:/g, '');
+    const c = this.full6.replace(/:/g, '');
+    return start <= c && c <= end;
+  }
+
+  isBogon() {
+    for (const sub in bogonIPRanges) {
+      const ip = new IP(sub);
+      if (this.in(ip)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  getBogon() {
+    for (const sub in bogonIPRanges) {
+      const ip = new IP(sub);
+      if (this.in(ip)) {
+        return bogonIPRanges[sub];
+      }
+    }
+    return null;
   }
 }
 
@@ -227,5 +221,10 @@ const bogonIPRanges = {
   '2001:0:f000::/36': 'Teredo bogon (240.0.0.0/4)',
   '2001:0:ffff:ffff::/64': 'Teredo bogon (255.255.255.255/32)',
 };
+
+console.log(new IP('127.0.0.1'));
+console.log(new IP('::1'));
+console.log(new IP('127.0.0.1/16'));
+console.log(new IP('0000:0000:0000:0000:0000:ffff:7f00:0001/58'));
 
 export default IP;
