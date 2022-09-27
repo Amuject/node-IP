@@ -222,9 +222,4 @@ const bogonIPRanges = {
   '2001:0:ffff:ffff::/64': 'Teredo bogon (255.255.255.255/32)',
 };
 
-console.log(new IP('127.0.0.1'));
-console.log(new IP('::1'));
-console.log(new IP('127.0.0.1/16'));
-console.log(new IP('0000:0000:0000:0000:0000:ffff:7f00:0001/58'));
-
 export default IP;
