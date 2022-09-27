@@ -129,6 +129,85 @@ class IP {
     };
   }
 
+  getRange4Ips() {
+    const cis = this.range.start.split('/')[0].split('.');
+    const cie = this.range.end.split('/')[0].split('.');
+    let size = 1;
+    for (let i = 0; i < cis.length; i++) {
+      cis[i] = cis[i] * 1;
+      cie[i] = cie[i] * 1;
+      if (cie[i] - cis[i] > 0) {
+        size = size * cie[i] - cis[i];
+      }
+    }
+    const ips = [];
+    l: for (let i1 = cis[0]; i1 <= cie[0]; i1++) {
+      for (let i2 = cis[1]; i2 <= cie[1]; i2++) {
+        for (let i3 = cis[2]; i3 <= cie[2]; i3++) {
+          for (let i4 = cis[3]; i4 <= cie[3]; i4++) {
+            const ip = i1 + '.' + i2 + '.' + i3 + '.' + i4;
+            ips.push(ip);
+            if (ip == this.range.end) {
+              break l;
+            }
+          }
+        }
+      }
+    }
+    return ips;
+  }
+
+  getRange6Ips() {
+    const cis = this.range.start.split('/')[0].split(':');
+    const cie = this.range.end.split('/')[0].split(':');
+    let size = 1;
+    for (let i = 0; i < cis.length; i++) {
+      cis[i] = parseInt(cis[i], 16);
+      cie[i] = parseInt(cie[i], 16);
+      if (cie[i] - cis[i] > 0) {
+        size = size * cie[i] - cis[i];
+      }
+    }
+    const ips = [];
+    l: for (let i1 = cis[0]; i1 <= cie[0]; i1++) {
+      for (let i2 = cis[1]; i2 <= cie[1]; i2++) {
+        for (let i3 = cis[2]; i3 <= cie[2]; i3++) {
+          for (let i4 = cis[3]; i4 <= cie[3]; i4++) {
+            for (let i5 = cis[4]; i5 <= cie[4]; i5++) {
+              for (let i6 = cis[5]; i6 <= cie[5]; i6++) {
+                for (let i7 = cis[6]; i7 <= cie[6]; i7++) {
+                  for (let i8 = cis[7]; i8 <= cie[7]; i8++) {
+                    const ip =
+                      i1.toString(16).padStart(4, '0') +
+                      ':' +
+                      i2.toString(16).padStart(4, '0') +
+                      ':' +
+                      i3.toString(16).padStart(4, '0') +
+                      ':' +
+                      i4.toString(16).padStart(4, '0') +
+                      ':' +
+                      i5.toString(16).padStart(4, '0') +
+                      ':' +
+                      i6.toString(16).padStart(4, '0') +
+                      ':' +
+                      i7.toString(16).padStart(4, '0') +
+                      ':' +
+                      i8.toString(16).padStart(4, '0');
+                    ips.push(ip);
+                    if (ip == this.range.end) {
+                      break l;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return ips;
+  }
+
   in(ip, ip2) {
     if (!ip2 && !ip.hasSubnet) {
       return this.full6 == ip.full6;
