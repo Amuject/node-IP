@@ -1,6 +1,6 @@
 {
   "name": "@wanyne/ip",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "@wanyne/ip",
   "author": "Wany <sung@wany.io> (https://wany.io)",
   "main": "ip.js",
