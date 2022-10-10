@@ -1,7 +1,7 @@
 {
-  "name": "@wanyne/ip",
-  "version": "1.2.2",
-  "description": "@wanyne/ip",
+  "name": "@wnynya/ip",
+  "version": "0.8.0",
+  "description": "@wnynya/ip",
   "author": "Wany <sung@wany.io> (https://wany.io)",
   "main": "ip.js",
   "exports": {
@@ -16,10 +16,10 @@
     "subnet",
     "calc"
   ],
-  "homepage": "https://github.com/wnynya/wanyne-modules-IP#readme",
+  "homepage": "https://github.com/wnynya/node-IP#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wnynya/wanyne-modules-IP.git"
+    "url": "https://github.com/wnynya/node-IP.git"
   },
   "scripts": {
     "babel": "npx babel ip.mjs --out-file-extension .js > ip.js"
