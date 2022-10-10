@@ -1,1 +1,1 @@
-# @wanyne/ip
+# @wnynya/ip
