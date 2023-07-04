@@ -1,0 +1,11 @@
+{
+  "name": "@wnynya/ip-test",
+  "version": "1.0.0",
+  "scripts": {
+    "test:esm": "node test.mjs",
+    "test:cjs": "node test.cjs"
+  },
+  "dependencies": {
+    "@wnynya/ip": "file:.."
+  }
+}
