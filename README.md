@@ -40,13 +40,13 @@ const ip = new IP('127.0.0.1');
 CJS
 
 ```js
-const ip = require('@wnynya/ip');
+const IP = require('@wnynya/ip');
 const ip = new IP('127.0.0.1');
 ```
 
 Typescript
 
-```ts
+```js
 import IP from '@wnynya/ip';
 const ip: IP = new IP('127.0.0.1');
 ```
