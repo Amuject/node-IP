@@ -13,3 +13,13 @@ console.log(ip.getSubnet());
 console.log(ip.getBogon());
 
 console.log(ip.getSubnetIPs());
+
+const iip = new IP('127.0.0.1');
+
+console.log(iip.toDemical()); // true
+console.log(iip.isBogon()); // true
+
+console.log(iip.in(new IP('127.0.0.1', '127.0.0.255'))); // true
+console.log(iip.in(new IP('127.0.1.0/24'))); // false
+
+console.log(new IP('127.0.1.0/24').getSubnet());
