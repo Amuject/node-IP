@@ -28,6 +28,29 @@ npm i @wnynya/ip
 
 ## Simple Example
 
+### Use IP
+
+ESM
+
+```js
+import IP from '@wnynya/ip';
+const ip = new IP('127.0.0.1');
+```
+
+CJS
+
+```js
+const ip = require('@wnynya/ip');
+const ip = new IP('127.0.0.1');
+```
+
+Typescript
+
+```ts
+import IP from '@wnynya/ip';
+const ip: IP = new IP('127.0.0.1');
+```
+
 ```js
 // Convert IPv4 string to demical & check IP is bogon.
 import IP from '@wnynya/ip'; // ESM
