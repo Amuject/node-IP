@@ -5,6 +5,8 @@
 ## Table of Content
 
 - [Installation](#installation)
+- [Use IP](#use-ip)
+- [Simple Example](#simple-example)
 - [API](#api)
   - Class: [`IP`](#class-ip)
     - [`new IP(value)`](#new-ipvalue)
@@ -26,9 +28,7 @@
 npm i @wnynya/ip
 ```
 
-## Simple Example
-
-### Use IP
+## Use IP
 
 ESM
 
@@ -50,6 +50,8 @@ Typescript
 import IP from '@wnynya/ip';
 const ip: IP = new IP('127.0.0.1');
 ```
+
+## Simple Example
 
 ```js
 // Convert IPv4 string to demical & check IP is bogon.
