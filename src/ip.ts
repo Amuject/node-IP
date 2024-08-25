@@ -190,7 +190,7 @@ class IP {
   }
 
   isBogon() {
-    return this.getBogon != null;
+    return this.getBogon() != null;
   }
 
   #fullIPv6(ip: string) {
