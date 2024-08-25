@@ -1,4 +1,4 @@
-# @wnynya/ip
+# @amuject/ip
 
 **IP module for calculation (demical, subnet) / check bogon.**
 

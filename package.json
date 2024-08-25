@@ -1,8 +1,8 @@
 {
-  "name": "@wnynya/ip",
-  "version": "0.9.1",
+  "name": "@amuject/ip",
+  "version": "1.0.1",
   "description": "IP calculation, bogon IP checking tool.",
-  "author": "Wany <sung@wany.io> (https://wany.io)",
+  "author": "Wany <sung@wanyne.com> (https://wanyne.com)",
   "type": "module",
   "exports": {
     ".": {
@@ -20,10 +20,10 @@
     "subnet",
     "calc"
   ],
-  "homepage": "https://github.com/wnynya/node-IP#readme",
+  "homepage": "https://github.com/Amuject/node-IP#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wnynya/node-IP.git"
+    "url": "https://github.com/Amuject/node-IP.git"
   },
   "scripts": {
     "build": "npm run build:clean && npm run build:esm && npm run build:cjs && npm run build:package",
